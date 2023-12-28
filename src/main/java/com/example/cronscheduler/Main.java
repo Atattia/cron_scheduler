@@ -1,7 +1,10 @@
 package com.example.cronscheduler;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 public class Main {
@@ -32,14 +35,15 @@ public class Main {
     }
 
     public static ArrayList<JobConfig> fileReader(){
-        String configFile = "./com/example/cronscheduler/config.txt";
+        String configFile = "./config.txt";
         ArrayList<JobConfig> jobList = new ArrayList<>();
+        String packageString = "com.example.cronscheduler.";
         try (FileInputStream input = new FileInputStream(configFile)) {
             Properties properties = new Properties();
             properties.load(input);
             for (String key : properties.stringPropertyNames()) {
                 String[] values = properties.getProperty(key).split(",");
-                String jobClassName = key;
+                String jobClassName = packageString+key;
                 String jobId = values[0].trim();
                 Integer interval = Integer.parseInt(values[1].trim());
                 String frequency = values[2].trim();

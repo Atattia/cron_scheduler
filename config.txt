@@ -1,3 +1,0 @@
-com.example.cronscheduler.PrintLineJob jobId1, 0, MINUTELY
-com.example.cronscheduler.CurrentTimeJob jobId2, 0, HOURLY
-com.example.cronscheduler.InfiniteSleepJob jobId3, 0, DAILY

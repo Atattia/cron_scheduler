@@ -1,1 +1,7 @@
 *.class
+*.xml
+*.lst
+**/target
+/target
+target/
+target/*

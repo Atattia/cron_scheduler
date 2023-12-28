@@ -1,4 +1,5 @@
 package com.example.cronscheduler;
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -14,6 +15,9 @@ import java.util.logging.SimpleFormatter;
 // Enum for scheduling frequency
 enum Frequency {
     MINUTELY, HOURLY, DAILY, WEEKLY
+}
+enum State{
+    SCHEDULED, RUNNING, FAILED, FINISHED
 }
 
 // CronScheduler class to schedule and manage jobs
@@ -33,15 +37,15 @@ class CronScheduler {
     public void scheduleJob(String jobId, Runnable job, Frequency freq, int intervalInMinutes) { 
         long period = frequencyMap.get(freq);
 
+        CustomLogger.logInfo("SCHEDULED: Job %s with ID %s".formatted(
+        job.getClass().getSimpleName(), jobId));
         executorService.scheduleAtFixedRate(
-                new JobExecutor(job),
+                new JobExecutor(job, jobId),
                 intervalInMinutes,
                 period,
                 TimeUnit.MINUTES
         );
 
-        CustomLogger.logInfo("Job %s scheduled with ID %s".formatted(
-                job.getClass().getSimpleName(), jobId));
     }
 
 }
@@ -49,40 +53,51 @@ class CronScheduler {
 // JobExecutor class to execute jobs
 class JobExecutor implements Runnable {
     private final Runnable job;
-    private volatile boolean isRunning;
+    private State state = State.SCHEDULED;
+    private String jobId;
 
     public boolean isRunning() {
-        return isRunning;
+        return this.state == State.RUNNING;
     }
-
-    public void setRunning(boolean isRunning) {
-        this.isRunning = isRunning;
+    public boolean isScheduled() {
+        return this.state == State.SCHEDULED;
     }
-
-    JobExecutor(Runnable job) {
+    public boolean isFailed() {
+        return this.state == State.FAILED;
+    }
+    public boolean isFinished() {
+        return this.state == State.FINISHED;
+    }
+    public State getState(){
+        return this.state;
+    }
+    
+    JobExecutor(Runnable job, String jobId) {
         this.job = job;
-        this.isRunning = false;
+        this.state = State.SCHEDULED;
+        this.jobId = jobId;    
     }
 
     @Override
     public void run() {
-        if (isRunning) {
-            CustomLogger.logError("Previous execution still in progress. Skipping this execution.");
-            return;
-        }
         try {
-            setRunning(true);
+            String jobClassString = job.getClass().getSimpleName();
+            this.state = State.RUNNING;
             LocalDateTime startTime = LocalDateTime.now();
+            CustomLogger.logInfo("STARTING: %s of ID:%s".formatted(jobClassString, this.jobId));
             job.run();
             LocalDateTime endTime = LocalDateTime.now();
             Duration executionDuration = Duration.between(startTime, endTime);
-            String className = job.getClass().getSimpleName();
-            CustomLogger.logInfo("Job %s completed in %d milliseconds".formatted(className, executionDuration.toMillis()));
+
+            CustomLogger.logInfo("COMPLETED: Job %s in %d milliseconds".formatted(this.jobId, executionDuration.toMillis()));
             
         } catch (Exception e) {
-            CustomLogger.logError("Error executing job: %d".formatted(e.getMessage()));
+            CustomLogger.logError("Failed to execute job %s: %s".formatted(this.jobId,e.getMessage()));
+            this.state = State.FAILED;
         } finally {
-            setRunning(false);
+            if(!isFailed()){
+                this.state = State.FINISHED;
+            } 
         }
     }
 }
@@ -92,7 +107,7 @@ class CustomLogger {
     private static final Logger logger = Logger.getLogger(CustomLogger.class.getName());
     static {
         try {
-            final FileHandler fileHandler = new FileHandler("./com/example/cronscheduler/output.log");
+            final FileHandler fileHandler = new FileHandler("./out/output.log");
             SimpleFormatter formatter = new SimpleFormatter();
             fileHandler.setFormatter(formatter);
             fileHandler.setLevel(Level.ALL);
