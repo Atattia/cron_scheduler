@@ -1,17 +1,21 @@
 # Cron Scheduler Project
 
-## Overview
+## Brief Description
 
-This project is a simple cron scheduler implemented in Java that allows users to schedule periodic job executions.
-Users define job classes in the `Jobs.java` file and provide execution details in a configuration file.
-The scheduler is then invoked via the Main method from the command line.
+This project is a simple cron scheduler in Java, it allows users to schedule job executions periodically.
+The user defines a job class in `Jobs.java` file and implements the execution details in the config file.
+The scheduler is invoked via the Main method from the command line, further details below.
+There are three example jobs in the `Jobs.java` file.
+
+In order to allow room for implementation, This project exclusively uses Java Standard Libraries, as well as `Maven` for building to facilitate unit testing.
+
+Snippets of output are included in the `output.log` file.
 
 ## Features
 
 - **Periodic Job Scheduling:** Users can schedule jobs to run periodically by providing details in a configuration file.
-- **Flexible Timing:** Jobs are executed based on user-defined intervals and frequencies.
-- **ThreadPool Configuration:** Users can configure the size of the thread pool used for multithreading.
-- **Out-of-Order Execution:** Jobs are executed independently, allowing for out-of-order execution. The scheduler does not enforce any specific order of execution.
+- **Flexibility:** Jobs are scheduled based on the defined intervals and frequencies, as well as configure the size of the threadpool that will be used for multithreading.
+- **Out-of-Order Execution:** Jobs are independently executed, allowing out-of-order execution. The scheduler does not enforce an order of execution.
 
 ## Project Structure
 
@@ -34,13 +38,12 @@ project-root/
 
 ## Getting Started
 
-1. **Define Job Classes:**
-   - Define job classes in the `Jobs.java` file. Each job class must implement the `Runnable` interface.
+1. **Define Job Class:**
+   - Define a class for the job in the `Jobs.java` file. Each job must implement `Runnable` interface.
 
 2. **Configure Jobs:**
-   - Edit the `config.txt` file to specify the following details of each job's execution.
+   - Edit the `config.txt` file to specify the details of the job's execution.
    - Each line represents one job:
-
    ```<jobClassName> <jobId>, <intervalInMinutes>, <Frequency>```
 
    -Example: 
@@ -48,7 +51,8 @@ project-root/
    PrintLineJob jobId1, 2, HOURLY
    ```
 3. **Compile Project:**
-   - Compile the project using the following command:
+
+   - Locate the `.Java` files and from there compile the project using the following command:
 
      ```bash
       javac -d bin Main.java CronScheduler.java Jobs.java
@@ -61,7 +65,7 @@ project-root/
      java -cp bin com.example.cronscheduler.Main <poolSize>
      ```
 
-   - Replace `<poolSize>` with the desired size of the thread pool.
+      Where `<poolSize>` is the desired size of the thread pool.
 
 5. **View Scheduled Jobs:**
    - The scheduler will log information about the scheduled jobs, including job class names, job IDs, and elapsed time and other real-time events.
@@ -79,13 +83,13 @@ com.example.Job3 JobId3, 15, DAILY
 
 - Periodic job execution continues indefinitely until the scheduler is interrupted.
 - Interval is the delay before the execution of job.
-- Interval must be provided, putting 0 will set no interval.
+- Interval must be provided, the user should put 0 if they do not want to set an interval.
 - There is no guaranteed order of execution.
 - The user will provide all jobs in a single configuration file.
 
 ## Further Work
 
-The current implementation provides a solid foundation for a cron scheduler, but there are other areas of improvement that can be achieved.
+This section addresses potential areas of improvements.
 
 - **Interactive GUI:**
   Implementing an interactive graphical user interface to enhance user experience.

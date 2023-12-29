@@ -1,22 +1,22 @@
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: SCHEDULED: Job PrintLineJob with ID jobId1
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: STARTING: PrintLineJob of ID:jobId1
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: SCHEDULED: Job CurrentTimeJob with ID jobId2
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: Executing PrintLineJob: Hello, this is a simple line!
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: STARTING: CurrentTimeJob of ID:jobId2
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
-INFO: COMPLETED: Job jobId1 in 2 milliseconds
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: SCHEDULED: Job InfiniteSleepJob with ID jobId3
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
+INFO: COMPLETED: Job jobId1 in 2 milliseconds
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: STARTING: InfiniteSleepJob of ID:jobId3
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
 INFO: Executing InfiniteSleepJob, Zzzzzzzzzz ...
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
-INFO: Executing CurrentTimeJob, Current time is 2023-12-28 21:08:21
-Dec 28, 2023 9:08:21 PM com.example.cronscheduler.CustomLogger logInfo
-INFO: COMPLETED: Job jobId2 in 3 milliseconds
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
+INFO: Executing CurrentTimeJob, Current time is 2023-12-29 22:01:07
+Dec 29, 2023 10:01:07 PM com.example.cronscheduler.CustomLogger logInfo
+INFO: COMPLETED: Job jobId2 in 5 milliseconds

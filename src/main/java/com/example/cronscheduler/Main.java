@@ -1,40 +1,40 @@
 package com.example.cronscheduler;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
+
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             if (args.length != 1) {
                 CustomLogger.logError("Usage: java Main <poolSize>");
                 System.exit(1);
             }
-            //Fetch Job details from config file
+            // Fetch Job details from config file
             ArrayList<JobConfig> jobList = fileReader();
-            //poolSize set by user
+            // poolSize set by user
             int poolSize = Integer.parseInt(args[0]);
-            //initialize scheduler
+            // initialize scheduler
             CronScheduler scheduler = new CronScheduler(poolSize);
-            //schedule each job
-            for(JobConfig jobConfig: jobList){
-                //reflection
+            // schedule each job
+            for (JobConfig jobConfig : jobList) {
+                // reflection
                 Class<?> jobClass = Class.forName(jobConfig.getJobClassName());
                 Constructor<?> jobConstructor = jobClass.getDeclaredConstructor();
                 Runnable job = (Runnable) jobConstructor.newInstance();
-                //begin scheduling
-                scheduler.scheduleJob(jobConfig.getJobId(), job, Frequency.valueOf(jobConfig.getFrequency()), jobConfig.getInterval());
+                // begin scheduling
+                scheduler.scheduleJob(jobConfig.getJobId(), job, Frequency.valueOf(jobConfig.getFrequency()),
+                        jobConfig.getInterval());
             }
         } catch (Exception e) {
             CustomLogger.logError("Error in main method: " + e.getMessage());
         }
     }
-
-    public static ArrayList<JobConfig> fileReader(){
+    
+    // Reads config.txt file to parse jobs
+    public static ArrayList<JobConfig> fileReader() {
         String configFile = "./config.txt";
         ArrayList<JobConfig> jobList = new ArrayList<>();
         String packageString = "com.example.cronscheduler.";
@@ -43,7 +43,7 @@ public class Main {
             properties.load(input);
             for (String key : properties.stringPropertyNames()) {
                 String[] values = properties.getProperty(key).split(",");
-                String jobClassName = packageString+key;
+                String jobClassName = packageString + key;
                 String jobId = values[0].trim();
                 Integer interval = Integer.parseInt(values[1].trim());
                 String frequency = values[2].trim();

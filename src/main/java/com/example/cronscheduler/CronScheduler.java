@@ -1,5 +1,5 @@
 package com.example.cronscheduler;
-import java.io.File;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -12,11 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-// Enum for scheduling frequency
+// Scheduling Frequency
 enum Frequency {
     MINUTELY, HOURLY, DAILY, WEEKLY
 }
-enum State{
+
+// JobExecutor State
+enum State {
     SCHEDULED, RUNNING, FAILED, FINISHED
 }
 
@@ -34,17 +36,16 @@ class CronScheduler {
         frequencyMap.put(Frequency.WEEKLY, TimeUnit.DAYS.toMinutes(7));
     }
 
-    public void scheduleJob(String jobId, Runnable job, Frequency freq, int intervalInMinutes) { 
+    public void scheduleJob(String jobId, Runnable job, Frequency freq, int intervalInMinutes) {
         long period = frequencyMap.get(freq);
 
         CustomLogger.logInfo("SCHEDULED: Job %s with ID %s".formatted(
-        job.getClass().getSimpleName(), jobId));
+                job.getClass().getSimpleName(), jobId));
         executorService.scheduleAtFixedRate(
                 new JobExecutor(job, jobId),
                 intervalInMinutes,
                 period,
-                TimeUnit.MINUTES
-        );
+                TimeUnit.MINUTES);
 
     }
 
@@ -59,28 +60,33 @@ class JobExecutor implements Runnable {
     public boolean isRunning() {
         return this.state == State.RUNNING;
     }
+
     public boolean isScheduled() {
         return this.state == State.SCHEDULED;
     }
+
     public boolean isFailed() {
         return this.state == State.FAILED;
     }
+
     public boolean isFinished() {
         return this.state == State.FINISHED;
     }
-    public State getState(){
+
+    public State getState() {
         return this.state;
     }
-    
+
     JobExecutor(Runnable job, String jobId) {
         this.job = job;
         this.state = State.SCHEDULED;
-        this.jobId = jobId;    
+        this.jobId = jobId;
     }
 
     @Override
     public void run() {
         try {
+            // Before running the job, we calculate execution time and set the state.
             String jobClassString = job.getClass().getSimpleName();
             this.state = State.RUNNING;
             LocalDateTime startTime = LocalDateTime.now();
@@ -89,20 +95,22 @@ class JobExecutor implements Runnable {
             LocalDateTime endTime = LocalDateTime.now();
             Duration executionDuration = Duration.between(startTime, endTime);
 
-            CustomLogger.logInfo("COMPLETED: Job %s in %d milliseconds".formatted(this.jobId, executionDuration.toMillis()));
-            
+            CustomLogger.logInfo(
+                    "COMPLETED: Job %s in %d milliseconds".formatted(this.jobId, executionDuration.toMillis()));
+
         } catch (Exception e) {
-            CustomLogger.logError("Failed to execute job %s: %s".formatted(this.jobId,e.getMessage()));
+            CustomLogger.logError("FAILED: job %s: %s".formatted(this.jobId, e.getMessage()));
             this.state = State.FAILED;
         } finally {
-            if(!isFailed()){
+            if (!isFailed()) {
+                // After run is done, the job is either finished or failed.
                 this.state = State.FINISHED;
-            } 
+            }
         }
     }
 }
 
-// Threadsafe Logger class
+// Threadsafe Logger that saves output logs
 class CustomLogger {
     private static final Logger logger = Logger.getLogger(CustomLogger.class.getName());
     static {
@@ -117,41 +125,33 @@ class CustomLogger {
         }
     }
 
-        static void logInfo(String message) {
-            logger.log(Level.INFO, message);
-        }
+    static void logInfo(String message) {
+        logger.log(Level.INFO, message);
+    }
 
-        static void logError(String message) {
-            logger.log(Level.SEVERE, message);
-        }
+    static void logError(String message) {
+        logger.log(Level.SEVERE, message);
+    }
 }
 
-
+// JobConfig class to facilitate the transport of job configs
 class JobConfig {
     private String jobClassName;
     private String jobId;
-    private Integer interval; // optional
-    private String frequency; // optional
+    private Integer interval;
+    private String frequency;
 
-    public JobConfig(String jobClassName, String jobId, String frequency){
-        this(jobClassName, jobId, 0, frequency);
-    }
     public JobConfig(String jobClassName, String jobId, Integer interval, String frequency) {
         this.jobClassName = jobClassName;
         this.jobId = jobId;
         this.interval = interval;
         this.frequency = frequency;
-        // Check if jobId and jobClassName are provided
-        if (jobId == null || jobClassName == null) {
-            throw new IllegalArgumentException("jobId and jobClassName are required");
-        }
-
-        // Validate that either interval or frequency is present
-        if (interval == null && frequency == null) {
-            throw new IllegalArgumentException("At least either interval or frequency must be provided for job: " + jobId);
+        // Check if all params are provided
+        if (jobId == null || jobClassName == null || interval == null || frequency == null) {
+            throw new IllegalArgumentException("One or more input parameters are missing");
         }
     }
-    
+
     // Getters
     public String getJobClassName() {
         return jobClassName;
@@ -168,7 +168,6 @@ class JobConfig {
     public String getFrequency() {
         return frequency;
     }
-
 
     @Override
     public String toString() {

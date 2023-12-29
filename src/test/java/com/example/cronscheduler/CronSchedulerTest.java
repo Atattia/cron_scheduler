@@ -1,4 +1,5 @@
 package com.example.cronscheduler;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,6 +21,7 @@ class CronSchedulerTest {
         assertEquals(1, mockExecutor.getQueue().size());
     }
 }
+
 class JobExecutorTest {
 
     @Test
@@ -64,7 +66,7 @@ class JobExecutorTest {
 
         // Create JobExecutor instance
         JobExecutor jobExecutor = new JobExecutor(mockJob, "testId");
-        
+
         // Create CronScheduler instance
         CronScheduler cronScheduler = new CronScheduler(1);
 
@@ -81,7 +83,7 @@ class JobExecutorTest {
         Runnable mockJob = mock(Runnable.class);
         // Create JobExecutor instance
         JobExecutor jobExecutor = new JobExecutor(mockJob, "testId");
-        
+
         doAnswer(invocation -> {
             Thread.sleep(Long.MAX_VALUE);
             return null;
@@ -92,6 +94,9 @@ class JobExecutorTest {
 
         // Schedule a job without delay (instantly)
         cronScheduler.scheduleJob("TestId", jobExecutor, Frequency.HOURLY, 0);
+
+        // Verify that the execution started
+        verify(mockJob).run();
 
         // Verify that the job is running
         assertEquals(State.RUNNING, jobExecutor.getState());
